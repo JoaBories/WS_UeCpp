@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "MainPlayerController.generated.h"
 
+class UGravityGunController;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
@@ -28,6 +29,7 @@ protected:
 
 protected:
 	TWeakObjectPtr<AMainCharacter> Character = nullptr;
+	TObjectPtr<UGravityGunController> GravityGunController = nullptr;
 	
 #pragma region Inputs
 protected:

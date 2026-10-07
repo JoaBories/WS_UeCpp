@@ -7,6 +7,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "controller/GravityGunController.h"
 
 #include "gameplay/MainCharacter.h"
 
@@ -17,6 +18,13 @@ void AMainPlayerController::SetPawn(APawn* InPawn)
 	if (!Character.IsValid()) 
 	{
 		Character = Cast<AMainCharacter>(InPawn);
+		
+		// Get gravity gun controller
+		GravityGunController = FindComponentByClass<UGravityGunController>();
+		if (GravityGunController)
+		{
+			GravityGunController->SetupInputComponentGravityGun(InputComponent, Character.Get());
+		}
 	}
 }
 
