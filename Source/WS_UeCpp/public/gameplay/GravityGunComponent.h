@@ -25,7 +25,11 @@ protected:
 
 public:	
 	void OnTakeObjectInputPressed();
+	
 	void OnThrowObjectInputPressed();
+	void OnThrowObjectInputReleased();
+	
+	void OnAdditionalMultInput(bool State);
 	
 	void OnUpdateReach(float Value);
 	
@@ -70,6 +74,19 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw", meta = (ClampMin = "0.0", ClampMax = "10000.0", Units = "CentimetersPerSecond"))
 	float PickupThrowForce = 3000.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw", meta = (ClampMin = "0.0", ClampMax = "20.0"))
+	float ThrowMaxHoldMult = 5.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw", meta = (ClampMin = "0.0", ClampMax = "30.0", Units = "Seconds"))
+	float ThrowMaxHoldTime = 2.0f;
+	
+	float TimeThrowPressed = 0.0f;
+	bool bThrowPressed = false;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw", meta = (ClampMin = "0.0", ClampMax = "20.0"))
+	float ThrowAdditionalMult = 5.0f;
+	
+	bool bAdditionalMult = false;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw")
 	FVector PickupAngularForce = FVector(2000.0f, 2000.0f, 2000.0f);
 protected:

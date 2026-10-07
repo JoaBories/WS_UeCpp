@@ -21,6 +21,8 @@ void UGravityGunComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	UpdatePickupLocation();
+	
+	if (bThrowPressed) TimeThrowPressed += DeltaTime;
 }
 
 void UGravityGunComponent::BeginPlay()
@@ -102,10 +104,20 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 
 void UGravityGunComponent::OnThrowObjectInputPressed()
 {
+	bThrowPressed = true;
+}
+
+void UGravityGunComponent::OnThrowObjectInputReleased()
+{
 	if (CurrentPickup.IsValid())
 	{
 		ReleasePickup(true);
 	}
+}
+
+void UGravityGunComponent::OnAdditionalMultInput(bool State)
+{
+	bAdditionalMult = State;
 }
 
 void UGravityGunComponent::OnUpdateReach(const float Value)
@@ -145,9 +157,11 @@ void UGravityGunComponent::ReleasePickup(bool bThrow)
 	CurrentPickupStaticMesh->SetSimulatePhysics(true);
 	
 	// Throw pickup
-	if (bThrow && PlayerCameraManager.IsValid())
+	const bool bCanThrowPickup = bThrow && PlayerCameraManager.IsValid();
+	if (bCanThrowPickup)
 	{
-		const FVector Impulse = PlayerCameraManager->GetActorForwardVector() * PickupThrowForce;
+		const float ThrowMult = ThrowMaxHoldMult * FMath::Clamp(TimeThrowPressed / ThrowMaxHoldTime, 0.0f, 1.0f) * (bAdditionalMult ? ThrowAdditionalMult : 1.0f);
+		const FVector Impulse = PlayerCameraManager->GetActorForwardVector() * PickupThrowForce * ThrowMult;
 		CurrentPickupStaticMesh->AddImpulse(Impulse);
 		
 		const FVector AngularImpulse = FVector(
@@ -155,6 +169,18 @@ void UGravityGunComponent::ReleasePickup(bool bThrow)
 			FMath::RandRange(-PickupAngularForce.Y,PickupAngularForce.Y),
 			FMath::RandRange(-PickupAngularForce.Z,PickupAngularForce.Z));
 		CurrentPickupStaticMesh->AddAngularImpulseInDegrees(AngularImpulse);
+		
+		TimeThrowPressed = 0.0f;
+		bThrowPressed = false;
+		
+		UE_LOG(LogTemp, Log, TEXT("Mult applied: %f"), ThrowMult);
+	
+		// Check if destruction required
+		const bool bCanDestroyPickup = CurrentPickupComponent.IsValid() && CurrentPickupComponent->GetPickupType() == EPickupType::DestroyAfterThrow;
+		if (bCanDestroyPickup)
+		{
+			CurrentPickupComponent->StartPickupDestructionTimer();
+		}
 	}
 	
 	// Clear pointers

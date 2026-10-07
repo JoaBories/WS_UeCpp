@@ -30,18 +30,39 @@ void UGravityGunController::SetupInputComponentGravityGun(TObjectPtr<UInputCompo
 	
 	// Bind input action
 	EnhancedInputComponent->BindAction(InputActionTake, ETriggerEvent::Triggered, this, &UGravityGunController::OnTakeObject);
-	EnhancedInputComponent->BindAction(InputActionThrow, ETriggerEvent::Triggered, this, &UGravityGunController::OnThrowObject);
+	
+	EnhancedInputComponent->BindAction(InputActionThrow, ETriggerEvent::Started, this, &UGravityGunController::OnThrowObjectPressed);
+	EnhancedInputComponent->BindAction(InputActionThrow, ETriggerEvent::Completed, this, &UGravityGunController::OnThrowObjectReleased);
+	
+	EnhancedInputComponent->BindAction(InputActionAdditionalMult, ETriggerEvent::Started, this, &UGravityGunController::OnAdditionalMultPressed);
+	EnhancedInputComponent->BindAction(InputActionAdditionalMult, ETriggerEvent::Completed, this, &UGravityGunController::OnAdditionalMultReleased);
+	
 	EnhancedInputComponent->BindAction(InputActionUpdateReach, ETriggerEvent::Triggered, this, &UGravityGunController::OnUpdateReach);
 }
 
-void UGravityGunController::OnTakeObject(const FInputActionValue& Value)
+void UGravityGunController::OnTakeObject()
 {
 	if (GravityGunComponent.IsValid()) GravityGunComponent->OnTakeObjectInputPressed();
 }
 
-void UGravityGunController::OnThrowObject(const FInputActionValue& Value)
+void UGravityGunController::OnThrowObjectPressed()
 {
 	if (GravityGunComponent.IsValid()) GravityGunComponent->OnThrowObjectInputPressed();
+}
+
+void UGravityGunController::OnThrowObjectReleased()
+{
+	if (GravityGunComponent.IsValid()) GravityGunComponent->OnThrowObjectInputReleased();
+}
+
+void UGravityGunController::OnAdditionalMultPressed()
+{
+	if (GravityGunComponent.IsValid()) GravityGunComponent->OnAdditionalMultInput(true);
+}
+
+void UGravityGunController::OnAdditionalMultReleased()
+{
+	if (GravityGunComponent.IsValid()) GravityGunComponent->OnAdditionalMultInput(false);
 }
 
 void UGravityGunController::OnUpdateReach(const FInputActionValue& Value)

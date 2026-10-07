@@ -26,9 +26,14 @@ protected:
 #pragma region Input
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
-	TObjectPtr<UInputAction> InputActionTake = nullptr;	
+	TObjectPtr<UInputAction> InputActionTake = nullptr;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
 	TObjectPtr<UInputAction> InputActionThrow = nullptr;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
+	TObjectPtr<UInputAction> InputActionAdditionalMult = nullptr;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
 	TObjectPtr<UInputAction> InputActionUpdateReach = nullptr;
 	
@@ -36,8 +41,14 @@ public:
 	void SetupInputComponentGravityGun(TObjectPtr<UInputComponent> InputComponent, AMainCharacter* MainCharacter);
 	
 protected:
-	void OnTakeObject(const FInputActionValue& Value);
-	void OnThrowObject(const FInputActionValue& Value);
+	void OnTakeObject();
+	
+	void OnThrowObjectPressed();
+	void OnThrowObjectReleased();
+	
+	void OnAdditionalMultPressed();
+	void OnAdditionalMultReleased();
+	
 	void OnUpdateReach(const FInputActionValue& Value);
 #pragma endregion
 };
