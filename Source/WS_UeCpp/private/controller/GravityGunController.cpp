@@ -46,6 +46,9 @@ void UGravityGunController::OnThrowObject(const FInputActionValue& Value)
 
 void UGravityGunController::OnUpdateReach(const FInputActionValue& Value)
 {
-	const float FloatValue = Value.Get<float>();
-	if (GravityGunComponent.IsValid()) GravityGunComponent->OnUpdateReach(FloatValue);
+	if (GravityGunComponent.IsValid())
+	{
+		const float FloatValue = Value.Get<float>();
+		GravityGunComponent->OnUpdateReach(FloatValue);
+	}
 }
