@@ -25,10 +25,7 @@ protected:
 
 public:	
 	void OnTakeObjectInputPressed();
-	void OnTakeObjectInputReleased();
-	
 	void OnThrowObjectInputPressed();
-	void OnThrowObjectInputReleased();
 	
 	void OnUpdateReach(float Value);
 	
@@ -57,6 +54,27 @@ protected:
 	TWeakObjectPtr<AActor> CurrentPickup = nullptr;
 	TWeakObjectPtr<UPickupComponent> CurrentPickupComponent = nullptr;
 	TWeakObjectPtr<UStaticMeshComponent> CurrentPickupStaticMesh = nullptr;
+	FName PreviousCollisionProfile = NAME_None;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Hold", meta = (ClampMin = "-100.0", ClampMax = "100.0", Units = "Centimeters"))
+	float PickupHeightOffset = -30.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Hold", meta = (ClampMin = "0.0", ClampMax = "1000.0", Units = "Centimeters"))
+	float PickupHoldMinDistance = 100.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Hold", meta = (ClampMin = "0.0", ClampMax = "1000.0", Units = "Centimeters"))
+	float PickupHoldMaxDistance = 500.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Hold", meta = (ClampMin = "0.0", ClampMax = "1000.0", Units = "Centimeters"))
+	float PickupHoldDistance = 100.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Hold", meta = (ClampMin = "0.0", ClampMax = "100.0", Units = "CentimetersPerSecond"))
+	float PickupHoldChangerate = 10.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw", meta = (ClampMin = "0.0", ClampMax = "10000.0", Units = "CentimetersPerSecond"))
+	float PickupThrowForce = 3000.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw")
+	FVector PickupAngularForce = FVector(2000.0f, 2000.0f, 2000.0f);
+protected:
+	void UpdatePickupLocation();
+	void ReleasePickup(bool bThrow = false);
 #pragma endregion
 	
 #pragma region Debug
