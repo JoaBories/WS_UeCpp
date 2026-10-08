@@ -39,6 +39,41 @@ void AGoal::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+unsigned int AGoal::CountPickupInGoal()
+{
+	if (!BoxComponent) return 0;
+	
+	// Prepare Box Cast
+	const FVector GoalLocation = GetActorLocation();
+	const FRotator GoalRotation = GetActorRotation();
+	const FVector ScaleBoxExtent = BoxComponent->GetScaledBoxExtent();
+	TArray<FHitResult> HitResults;
+	TArray<AActor*> ActorsToIgnore;
+	
+	UKismetSystemLibrary::BoxTraceMulti(this, 
+		GoalLocation, GoalLocation, ScaleBoxExtent, GoalRotation, 
+		GoalTraceChannel, false, ActorsToIgnore, EDrawDebugTrace::None, 
+		HitResults, true);
+
+	const unsigned int Count = HitResults.Num();
+	return Count;
+	
+	// // Method with overlapping actors
+	// // Get actors
+	// TArray<AActor*> OverlappingActors;
+	// BoxComponent->GetOverlappingActors(OverlappingActors);
+	// // Count Pickups among OverlappingActors
+	// unsigned int NumberOfPickup = 0;
+	// for (AActor* Actor : OverlappingActors)
+	// {
+	// 	if (Actor->FindComponentByClass<UPickupComponent>())
+	// 	{
+	// 		NumberOfPickup++;
+	// 	}
+	// }
+	// return NumberOfPickup;
+}
+
 void AGoal::OnBoxComponentOverlap(
 	UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, 
@@ -52,7 +87,12 @@ void AGoal::OnBoxComponentOverlap(
 	
 	// Update score
 	Score++;
+	
+	GoalScored.Broadcast(this, Score);
+	
+#if !UE_BUILD_SHIPPING
 	FString GoalName = UKismetSystemLibrary::GetDisplayName(this);
 	UE_LOG(LogTemp, Log, TEXT("%d Pickup entered the %s"), Score, *GoalName);
+#endif
 }
 

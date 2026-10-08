@@ -76,12 +76,12 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 	
 	if (!bHit)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Didn't hit nothing"));
+		//UE_LOG(LogTemp, Log, TEXT("Didn't hit nothing"));
 		return;
 	}
 	
-	UE_LOG(LogTemp, Log, TEXT("We hit: %s"), 
-		*UKismetSystemLibrary::GetDisplayName(HitResult.GetActor()));
+	//UE_LOG(LogTemp, Log, TEXT("We hit: %s"), 
+	//	*UKismetSystemLibrary::GetDisplayName(HitResult.GetActor()));
 	
 	// Get pickup reference
 	CurrentPickup = HitResult.GetActor();
@@ -147,13 +147,13 @@ void UGravityGunComponent::OnUpdateReach(const float Value)
 	{
 		PickupHoldDistance += Value * PickupHoldChangerate;
 		PickupHoldDistance = FMath::Clamp(PickupHoldDistance, PickupHoldMinDistance, PickupHoldMaxDistance);
-		UE_LOG(LogTemp, Log, TEXT("Updated Hold Distance: %f cm"), PickupHoldDistance);
+		//UE_LOG(LogTemp, Log, TEXT("Updated Hold Distance: %f cm"), PickupHoldDistance);
 	}
 	else
 	{
 		GravityGunReach += Value * GravityGunReachChangerate;
 		GravityGunReach = FMath::Clamp(GravityGunReach, GravityGunMinReach, GravityGunMaxReach);
-		UE_LOG(LogTemp, Log, TEXT("Updated Reach: %f cm"), GravityGunReach);
+		//UE_LOG(LogTemp, Log, TEXT("Updated Reach: %f cm"), GravityGunReach);
 	}
 }
 
@@ -194,7 +194,7 @@ void UGravityGunComponent::ReleasePickup(bool bThrow)
 		TimeThrowPressed = 0.0f;
 		bThrowPressed = false;
 		
-		UE_LOG(LogTemp, Log, TEXT("Mult applied: %f"), ThrowMult);
+		//UE_LOG(LogTemp, Log, TEXT("Mult applied: %f"), ThrowMult);
 	
 		// Check if destruction required
 		const bool bCanDestroyPickup = CurrentPickupComponent.IsValid() && CurrentPickupComponent->GetPickupType() == EPickupType::DestroyAfterThrow;

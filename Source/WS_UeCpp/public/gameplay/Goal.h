@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Goal.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnGoalScored, AGoal*, Goal, unsigned int, NewScore);
+
 class UBoxComponent;
 
 UCLASS(Abstract)
@@ -20,7 +22,13 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
+public:
+	FOnGoalScored GoalScored;
+	
 #pragma region CollisionBox
+public:
+	unsigned int CountPickupInGoal();
+	
 protected:
 	UFUNCTION()
 	void OnBoxComponentOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
@@ -30,5 +38,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UBoxComponent> BoxComponent = nullptr;
 	unsigned int Score = 0;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Goal")
+	TEnumAsByte<ETraceTypeQuery> GoalTraceChannel;
 #pragma endregion
 };

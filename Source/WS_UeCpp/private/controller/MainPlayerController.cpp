@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "controller/GravityGunController.h"
+#include "controller/ScoreController.h"
 
 #include "gameplay/MainCharacter.h"
 
@@ -24,6 +25,13 @@ void AMainPlayerController::SetPawn(APawn* InPawn)
 		if (GravityGunController)
 		{
 			GravityGunController->SetupInputComponentGravityGun(InputComponent, Character.Get());
+		}
+		
+		// Get score controller
+		ScoreController = FindComponentByClass<UScoreController>();
+		if (ScoreController)
+		{
+			ScoreController->SetupInputComponentScore(InputComponent, Character.Get());
 		}
 	}
 }
