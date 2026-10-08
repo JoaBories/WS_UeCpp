@@ -42,6 +42,8 @@
     <setting file="file://$PROJECT_DIR$/../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/Engine/Private/PlayerCameraManager.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/InputCore/Classes/InputCoreTypes.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../../../../Program Files/Epic Games/UE_5.7/Engine/Source/Runtime/SymsLib/syms/core/group/syms_group.h" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/WS_UeCpp/private/ETeams.cpp" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Source/WS_UeCpp/private/ETeams.h" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/WS_UeCpp/private/gameplay/Goal.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/WS_UeCpp/private/gameplay/PickupComponent.cpp" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Source/WS_UeCpp/private/gameplay/ScoreComponent.cpp" root0="FORCE_HIGHLIGHTING" />
@@ -65,6 +67,8 @@
   &quot;keyToString&quot;: {
     &quot;C/C++ Project.WS_UeCpp.executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Notification.DisplayName-DoNotAsk-Rider&quot;: &quot;Rider&quot;,
+    &quot;Notification.DoNotAsk-Rider&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
@@ -182,6 +186,11 @@
     <servers />
   </component>
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="dotnet:OpenTelemetry.Api" />
+    <option featureType="dependencySupport" implementationName="dotnet:OpenTelemetry" />
+    <option featureType="dependencySupport" implementationName="dotnet:Microsoft.ApplicationInsights" />
+  </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
   </component>

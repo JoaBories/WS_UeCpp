@@ -30,6 +30,7 @@ void UScoreController::SetupInputComponentScore(TObjectPtr<UInputComponent> Inpu
 	
 	// Bind input action
 	EnhancedInputComponent->BindAction(InputActionShowScore, ETriggerEvent::Triggered, this, &UScoreController::OnShowScore);
+	EnhancedInputComponent->BindAction(InputActionCountPickups, ETriggerEvent::Triggered, this, &UScoreController::OnCountPickups);
 }
 
 void UScoreController::OnShowScore(const FInputActionValue& InputActionValue)
@@ -38,7 +39,15 @@ void UScoreController::OnShowScore(const FInputActionValue& InputActionValue)
 	{
 		const float MovementValue = InputActionValue.Get<float>();
 		
-		if (MovementValue > 0) ScoreComponent->PrintScore();
-		else ScoreComponent->NumberOfPickupsInGoals();
+		if (MovementValue > 0) ScoreComponent->PrintGoalScore();
+		else ScoreComponent->PrintTeamScore();
+	}
+}
+
+void UScoreController::OnCountPickups()
+{
+	if (ScoreComponent.IsValid())
+	{
+		ScoreComponent->NumberOfPickupsInGoals();
 	}
 }

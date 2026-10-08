@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TeamEnum.h"
 #include "GameFramework/Actor.h"
+
 #include "Goal.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnGoalScored, AGoal*, Goal, unsigned int, NewScore);
@@ -17,6 +19,8 @@ class WS_UECPP_API AGoal : public AActor
 	
 public:	
 	AGoal(const FObjectInitializer& ObjectInitializer);
+	
+	ETeam GetTeam() const;
 
 protected:
 	virtual void BeginPlay() override;
@@ -24,6 +28,10 @@ protected:
 	
 public:
 	FOnGoalScored GoalScored;
+	
+protected:
+	UPROPERTY(EditAnywhere, Category="Goal")
+	ETeam Team = ETeam::None;
 	
 #pragma region CollisionBox
 public:

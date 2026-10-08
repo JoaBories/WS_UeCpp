@@ -17,6 +17,11 @@ AGoal::AGoal(const FObjectInitializer& ObjectInitializer) :
 	if (BoxComponent) SetRootComponent(BoxComponent);
 }
 
+ETeam AGoal::GetTeam() const
+{
+	return Team;
+}
+
 void AGoal::BeginPlay()
 {
 	Super::BeginPlay();

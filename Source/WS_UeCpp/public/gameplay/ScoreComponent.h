@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "TeamEnum.h"
 #include "Components/ActorComponent.h"
+
 #include "ScoreComponent.generated.h"
 
 class AGoal;
@@ -21,9 +23,11 @@ public:
 	
 protected:
 	TMap<AGoal*, unsigned int> GoalMap;
+	TMap<ETeam, unsigned int> TeamMap;
 	
 public:
-	void PrintScore();
+	void PrintGoalScore();
+	void PrintTeamScore();
 	void NumberOfPickupsInGoals();
 	
 protected:

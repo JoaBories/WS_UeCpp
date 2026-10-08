@@ -27,11 +27,14 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
 	TObjectPtr<UInputAction> InputActionShowScore = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
+	TObjectPtr<UInputAction> InputActionCountPickups = nullptr;
 	
 public:
 	void SetupInputComponentScore(TObjectPtr<UInputComponent> InputComponent, AMainCharacter* MainCharacter);
 	
 protected:
 	void OnShowScore(const FInputActionValue& InputActionValue);
+	void OnCountPickups();
 #pragma endregion
 };
