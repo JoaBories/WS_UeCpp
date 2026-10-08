@@ -92,6 +92,9 @@ protected:
 protected:
 	void UpdatePickupLocation();
 	void ReleasePickup(bool bThrow = false);
+	
+	UFUNCTION()
+	void OnPickupDestroyed();
 #pragma endregion
 	
 #pragma region Debug

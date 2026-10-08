@@ -8,6 +8,8 @@
 
 #include "PickupComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPickupDestroyedDelegate);
+
 USTRUCT(BlueprintType)
 struct FPickupStruct
 {
@@ -27,8 +29,12 @@ class WS_UECPP_API UPickupComponent : public UActorComponent
 public:	
 	UPickupComponent();
 	EPickupType GetPickupType() const;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
-protected:
+public:
+	FOnPickupDestroyedDelegate PickupDestroy;
+	
+protected:	
 	UPROPERTY(EditAnywhere, Category = "Pickup")
 	FPickupStruct PickupStruct;
 	
@@ -38,6 +44,7 @@ protected:
 
 public:
 	void StartPickupDestructionTimer();
+	void ClearDestructionTimer();
 
 protected:
 	void DestroyPickup();

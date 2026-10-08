@@ -70,6 +70,7 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 			FColor::Red, false, DrawDebugTime, 0, 1.0f);
 	}
 #endif
+	
 	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, 
 		RaycastStart, RaycastEnd, GravityGunCollisionChannel, Params);
 	
@@ -100,6 +101,26 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 	CurrentPickupStaticMesh->SetSimulatePhysics(false);
 	PreviousCollisionProfile = CurrentPickupStaticMesh->GetCollisionProfileName();
 	CurrentPickupStaticMesh->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
+	
+	// Check pickup type
+	const EPickupType PickupType = CurrentPickupComponent.IsValid() ? CurrentPickupComponent->GetPickupType() : EPickupType::None;
+	switch (PickupType)
+	{
+		case EPickupType::DestroyAfterPickup:
+			// Launch Timer
+			CurrentPickupComponent->StartPickupDestructionTimer();
+			
+			// Bind on event
+			CurrentPickupComponent->PickupDestroy.AddUniqueDynamic(this, &UGravityGunComponent::OnPickupDestroyed);
+			break;
+		
+		case EPickupType::DestroyAfterThrow:
+			CurrentPickupComponent->ClearDestructionTimer();
+			break;
+		
+		default:
+			break;
+	}
 }
 
 void UGravityGunComponent::OnThrowObjectInputPressed()
@@ -183,8 +204,21 @@ void UGravityGunComponent::ReleasePickup(bool bThrow)
 		}
 	}
 	
+	// Unbind on destroy event
+	const bool bCanUnbindFromDestructionEvent = 
+		CurrentPickupComponent.IsValid() && CurrentPickupComponent->GetPickupType() == EPickupType::DestroyAfterPickup;
+	if (bCanUnbindFromDestructionEvent)
+	{
+		CurrentPickupComponent->PickupDestroy.RemoveDynamic(this, &UGravityGunComponent::OnPickupDestroyed);
+	}
+	
 	// Clear pointers
 	CurrentPickupStaticMesh = nullptr;
 	CurrentPickupComponent = nullptr;
 	CurrentPickup = nullptr;
+}
+
+void UGravityGunComponent::OnPickupDestroyed()
+{
+	ReleasePickup();
 }
