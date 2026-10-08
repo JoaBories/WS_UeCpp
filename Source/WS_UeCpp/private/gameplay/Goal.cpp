@@ -6,6 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "gameplay/PickupComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "UObject/ObjectSaveContext.h"
 
 AGoal::AGoal(const FObjectInitializer& ObjectInitializer) : 
 	Super(ObjectInitializer)
@@ -16,6 +17,24 @@ AGoal::AGoal(const FObjectInitializer& ObjectInitializer) :
 	BoxComponent = ObjectInitializer.CreateOptionalDefaultSubobject<UBoxComponent>(this, TEXT("BoxComponent"));
 	if (BoxComponent) SetRootComponent(BoxComponent);
 }
+
+#if !UE_BUILD_SHIPPING
+void AGoal::PreSave(const FObjectPreSaveContext SaveContext)
+{
+	Super::PreSave(SaveContext);
+	
+	//Make sure we're on the world and make sure we're dealing with an Instance
+	const bool bIsInstanceInLoadedWorld = GetWorld() && !IsTemplate();
+	if (bIsInstanceInLoadedWorld)
+	{
+		if (Team == ETeam::None)
+		{
+			FString GoalName = UKismetSystemLibrary::GetDisplayName(this);
+			UE_LOG(LogTemp, Warning, TEXT("The team need to be setup for %s"), *GoalName);
+		}
+	}
+}
+#endif
 
 ETeam AGoal::GetTeam() const
 {

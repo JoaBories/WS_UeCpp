@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "TeamEnum.h"
 #include "GameFramework/Actor.h"
-
 #include "Goal.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnGoalScored, AGoal*, Goal, unsigned int, NewScore);
@@ -20,11 +19,16 @@ class WS_UECPP_API AGoal : public AActor
 public:	
 	AGoal(const FObjectInitializer& ObjectInitializer);
 	
+#if !UE_BUILD_SHIPPING
+	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
+#endif
+	
 	ETeam GetTeam() const;
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
 	
 public:
 	FOnGoalScored GoalScored;
