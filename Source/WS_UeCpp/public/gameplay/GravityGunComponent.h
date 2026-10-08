@@ -11,6 +11,8 @@ class UStaticMeshComponent;
 class AMainCharacter;
 class APlayerCameraManager;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickupTakenDelegate, AActor*, PickupActor);
+
 UCLASS(Abstract, Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WS_UECPP_API UGravityGunComponent : public UActorComponent
 {
@@ -32,6 +34,10 @@ public:
 	void OnAdditionalMultInput(bool State);
 	
 	void OnUpdateReach(float Value);
+	
+public:
+	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category= "Gravity Gun")
+	FOnPickupTakenDelegate PickupTaken;
 	
 protected:
 	TWeakObjectPtr<APlayerCameraManager> PlayerCameraManager = nullptr;
@@ -89,6 +95,13 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw")
 	FVector PickupAngularForce = FVector(2000.0f, 2000.0f, 2000.0f);
+
+public:
+	UFUNCTION(BlueprintPure, Category= "Gravity Gun")
+	float GetThrowMaxHoldTime() const;
+	UFUNCTION(BlueprintPure, Category= "Gravity Gun")
+	float GetThrowTime() const;
+
 protected:
 	void UpdatePickupLocation();
 	void ReleasePickup(bool bThrow = false);

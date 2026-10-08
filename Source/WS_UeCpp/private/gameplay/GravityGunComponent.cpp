@@ -121,15 +121,26 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 		default:
 			break;
 	}
+	
+	// Broadcast pickup event
+	PickupTaken.Broadcast(CurrentPickup.Get());
 }
 
 void UGravityGunComponent::OnThrowObjectInputPressed()
 {
-	bThrowPressed = true;
+	if (CurrentPickup.IsValid())
+	{
+		TimeThrowPressed = 0.0f;
+		bThrowPressed = true;
+	}
 }
 
 void UGravityGunComponent::OnThrowObjectInputReleased()
 {
+		
+	TimeThrowPressed = 0.0f;
+	bThrowPressed = false;
+	
 	if (CurrentPickup.IsValid())
 	{
 		ReleasePickup(true);
@@ -155,6 +166,16 @@ void UGravityGunComponent::OnUpdateReach(const float Value)
 		GravityGunReach = FMath::Clamp(GravityGunReach, GravityGunMinReach, GravityGunMaxReach);
 		//UE_LOG(LogTemp, Log, TEXT("Updated Reach: %f cm"), GravityGunReach);
 	}
+}
+
+float UGravityGunComponent::GetThrowMaxHoldTime() const
+{
+	return ThrowMaxHoldTime;
+}
+
+float UGravityGunComponent::GetThrowTime() const
+{
+	return TimeThrowPressed;
 }
 
 void UGravityGunComponent::UpdatePickupLocation()
@@ -190,9 +211,6 @@ void UGravityGunComponent::ReleasePickup(bool bThrow)
 			FMath::RandRange(-PickupAngularForce.Y,PickupAngularForce.Y),
 			FMath::RandRange(-PickupAngularForce.Z,PickupAngularForce.Z));
 		CurrentPickupStaticMesh->AddAngularImpulseInDegrees(AngularImpulse);
-		
-		TimeThrowPressed = 0.0f;
-		bThrowPressed = false;
 		
 		//UE_LOG(LogTemp, Log, TEXT("Mult applied: %f"), ThrowMult);
 	
