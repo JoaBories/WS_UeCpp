@@ -21,7 +21,7 @@ void UScoreController::SetupInputComponentScore(TObjectPtr<UInputComponent> Inpu
 	const bool bAllPointersChecked = InputComponent && MainCharacter && InputActionShowScore;
 	if (!bAllPointersChecked) return;
 	
-	// Get gravity gun comp
+	// Get score comp
 	ScoreComponent = MainCharacter->FindComponentByClass<UScoreComponent>();
 	
 	// Cast to Enhanced inputs

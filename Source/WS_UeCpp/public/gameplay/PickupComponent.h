@@ -8,7 +8,7 @@
 
 #include "PickupComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPickupDestroyedDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickupDestroyedDelegate, UPickupComponent*, PickupComponent);
 
 USTRUCT(BlueprintType)
 struct FPickupStruct

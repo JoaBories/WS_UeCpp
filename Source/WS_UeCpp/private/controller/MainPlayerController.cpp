@@ -7,8 +7,10 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+
 #include "controller/GravityGunController.h"
 #include "controller/ScoreController.h"
+#include "controller/PickupSpawnerController.h"
 
 #include "gameplay/MainCharacter.h"
 
@@ -16,7 +18,7 @@ void AMainPlayerController::SetPawn(APawn* InPawn)
 {
 	Super::SetPawn(InPawn);
 
-	if (!Character.IsValid()) 
+	if (!Character.IsValid())
 	{
 		Character = Cast<AMainCharacter>(InPawn);
 		
@@ -32,6 +34,13 @@ void AMainPlayerController::SetPawn(APawn* InPawn)
 		if (ScoreController)
 		{
 			ScoreController->SetupInputComponentScore(InputComponent, Character.Get());
+		}
+		
+		// Get pickup spawner controller
+		PickupSpawnerController = FindComponentByClass<UPickupSpawnerController>();
+		if (PickupSpawnerController)
+		{
+			PickupSpawnerController->SetupInputComponentPickupSpawner(InputComponent, Character.Get());
 		}
 	}
 }

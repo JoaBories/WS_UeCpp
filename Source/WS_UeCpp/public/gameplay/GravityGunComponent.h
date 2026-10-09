@@ -107,7 +107,7 @@ protected:
 	void ReleasePickup(bool bThrow = false);
 	
 	UFUNCTION()
-	void OnPickupDestroyed();
+	void OnPickupDestroyed(UPickupComponent* PickupComponent);
 #pragma endregion
 	
 #pragma region Debug

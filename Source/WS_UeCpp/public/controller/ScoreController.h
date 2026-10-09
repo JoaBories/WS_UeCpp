@@ -17,7 +17,6 @@ class WS_UECPP_API UScoreController : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
 	UScoreController();
 	
 protected:

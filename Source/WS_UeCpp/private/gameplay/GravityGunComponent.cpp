@@ -137,10 +137,6 @@ void UGravityGunComponent::OnThrowObjectInputPressed()
 
 void UGravityGunComponent::OnThrowObjectInputReleased()
 {
-		
-	TimeThrowPressed = 0.0f;
-	bThrowPressed = false;
-	
 	if (CurrentPickup.IsValid())
 	{
 		ReleasePickup(true);
@@ -236,7 +232,7 @@ void UGravityGunComponent::ReleasePickup(bool bThrow)
 	CurrentPickup = nullptr;
 }
 
-void UGravityGunComponent::OnPickupDestroyed()
+void UGravityGunComponent::OnPickupDestroyed(UPickupComponent* PickupComponent)
 {
 	ReleasePickup();
 }

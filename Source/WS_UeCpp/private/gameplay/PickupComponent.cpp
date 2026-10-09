@@ -41,6 +41,6 @@ void UPickupComponent::ClearDestructionTimer()
 void UPickupComponent::DestroyPickup()
 {
 	ClearDestructionTimer();
-	PickupDestroy.Broadcast();
+	PickupDestroy.Broadcast(this);
 	GetOwner()->Destroy();
 }

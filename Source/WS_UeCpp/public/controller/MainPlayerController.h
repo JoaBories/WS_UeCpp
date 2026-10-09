@@ -6,8 +6,10 @@
 #include "GameFramework/PlayerController.h"
 #include "MainPlayerController.generated.h"
 
+class UPickupSpawnerController;
 class UScoreController;
 class UGravityGunController;
+
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
@@ -32,6 +34,7 @@ protected:
 	TWeakObjectPtr<AMainCharacter> Character = nullptr;
 	TObjectPtr<UGravityGunController> GravityGunController = nullptr;
 	TObjectPtr<UScoreController> ScoreController = nullptr;
+	TObjectPtr<UPickupSpawnerController> PickupSpawnerController = nullptr;
 	
 #pragma region Inputs
 protected:
