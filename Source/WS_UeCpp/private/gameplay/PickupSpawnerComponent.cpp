@@ -11,7 +11,6 @@ UPickupSpawnerComponent::UPickupSpawnerComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
 void UPickupSpawnerComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -37,8 +36,8 @@ void UPickupSpawnerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void UPickupSpawnerComponent::SpawnNormalPickup()
 {
-	// Check Class
-	if (!NormalPickup) return;
+	// Check Class and Cooldown
+	if (!NormalPickup || bIsOnCooldown) return;
 	
 	//Check Cap
 	const bool bIsCapReached = TotalPickupCount >= TotalPickupCap || NormalPickupCount >= NormalPickupCap;
@@ -52,14 +51,17 @@ void UPickupSpawnerComponent::SpawnNormalPickup()
 	AActor* SpawnedActor = SpawnAndBindPickup(NormalPickup);
 	if (!SpawnedActor) return;
 	
+	LaunchCooldownTimer();
+	
+	// Count pickup
 	NormalPickupCount++;
 	TotalPickupCount++;
 }
 
 void UPickupSpawnerComponent::SpawnThrowPickup()
 {
-	// Check Class
-	if (!ThrowPickup) return;
+	// Check Class and Cooldown
+	if (!ThrowPickup || bIsOnCooldown) return;
 	
 	//Check Cap
 	const bool bIsCapReached = TotalPickupCount >= TotalPickupCap || ThrowPickupCount >= ThrowPickupCap;
@@ -73,14 +75,17 @@ void UPickupSpawnerComponent::SpawnThrowPickup()
 	AActor* SpawnedActor = SpawnAndBindPickup(ThrowPickup);
 	if (!SpawnedActor) return;
 	
+	LaunchCooldownTimer();
+	
+	// Count pickup
 	ThrowPickupCount++;
 	TotalPickupCount++;
 }
 
 void UPickupSpawnerComponent::SpawnTakePickup()
 {
-	// Check Class
-	if (!TakePickup) return;
+	// Check Class and Cooldown
+	if (!TakePickup || bIsOnCooldown) return;
 	
 	//Check Cap
 	const bool bIsCapReached = TotalPickupCount >= TotalPickupCap || TakePickupCount >= TakePickupCap;
@@ -94,7 +99,9 @@ void UPickupSpawnerComponent::SpawnTakePickup()
 	AActor* SpawnedActor = SpawnAndBindPickup(TakePickup);
 	if (!SpawnedActor) return;
 	
-	// Count Pickup
+	LaunchCooldownTimer();
+	
+	// Count pickup
 	TakePickupCount++;
 	TotalPickupCount++;
 }
@@ -167,6 +174,29 @@ void UPickupSpawnerComponent::UnbindPickups(UClass* PickupClass)
 		
 		PickupComp->PickupDestroy.RemoveDynamic(this, &UPickupSpawnerComponent::OnPickupDestroyed);
 	}
+}
+
+void UPickupSpawnerComponent::LaunchCooldownTimer()
+{
+	bIsOnCooldown = true;
+	
+	// Prepare timer
+	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+	TimerManager.ClearTimer(CooldownTimerHandle);
+	TimerManager.SetTimer(CooldownTimerHandle, this, &UPickupSpawnerComponent::EndCooldown, SpawnCooldown, false);
+}
+
+void UPickupSpawnerComponent::ClearCooldownTimer()
+{
+	// Clear timer
+	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+	TimerManager.ClearTimer(CooldownTimerHandle);
+}
+
+void UPickupSpawnerComponent::EndCooldown()
+{
+	ClearCooldownTimer();
+	bIsOnCooldown = false;
 }
 
 void UPickupSpawnerComponent::OnPickupDestroyed(UPickupComponent* PickupComponent)

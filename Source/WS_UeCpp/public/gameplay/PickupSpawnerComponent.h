@@ -37,7 +37,13 @@ protected:
 	void CountAndBindPickups(UClass* PickupClass, unsigned int& PickupCount);
 	void UnbindPickups(UClass* PickupClass);
 	
+	void LaunchCooldownTimer();
+	void ClearCooldownTimer();
+	
+	void EndCooldown();
+	
 protected:
+	// Spawn
 	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner")
 	TSubclassOf<AActor> NormalPickup = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner")
@@ -45,22 +51,31 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner")
 	TSubclassOf<AActor> TakePickup = nullptr;
 	
-	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner", meta=(ClampMin = "100.0", ClampMax = "500.0"))
+	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner", meta=(ClampMin = "100.0", ClampMax = "500"))
 	float SpawnDistance = 150.0f;
 	
-	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner", meta=(ClampMax = "200.0"))
+	// Count
+	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner|Cap", meta=(ClampMin = "0", ClampMax = "200"))
 	unsigned int NormalPickupCap = 50.0f;
-	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner", meta=(ClampMax = "200.0"))
+	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner|Cap", meta=(ClampMin = "0", ClampMax = "200"))
 	unsigned int ThrowPickupCap = 50.0f;
-	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner", meta=(ClampMax = "200.0"))
+	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner|Cap", meta=(ClampMin = "0", ClampMax = "200"))
 	unsigned int TakePickupCap = 50.0f;
-	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner", meta=(ClampMax = "500.0"))
+	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner|Cap", meta=(ClampMin = "0", ClampMax = "500"))
 	unsigned int TotalPickupCap = 200.0f;
 	
 	unsigned int NormalPickupCount = 0;
 	unsigned int ThrowPickupCount = 0;
 	unsigned int TakePickupCount = 0;
 	unsigned int TotalPickupCount = 0;
+	
+	// Cooldown
+	UPROPERTY(EditdefaultsOnly, Category="PickupSpawner", meta=(ClampMin = "0.0", ClampMax = "10.0"))
+	float SpawnCooldown = 1.0f;
+	
+	FTimerHandle CooldownTimerHandle;
+	bool bIsOnCooldown = false;
+	
 # pragma endregion
 	
 protected:

@@ -17,7 +17,7 @@ struct FPickupStruct
 	
 	UPROPERTY(EditAnywhere)
 	EPickupType PickupType = EPickupType::None;
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "(PickupType == EPickupType::DestroyAfterPickup) || (PickupType == EPickupType::DestroyAfterThrow)"))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "(PickupType == EPickupType::DestroyAfterTake) || (PickupType == EPickupType::DestroyAfterThrow)"))
 	float DestructionTime = 5.0f;
 };
 
