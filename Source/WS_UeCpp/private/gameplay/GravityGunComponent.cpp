@@ -58,11 +58,7 @@ void UGravityGunComponent::OnTakeObject()
 	FHitResult HitResult;
 	
 	const bool bHit = ShootPickupSphereTrace(SphereTraceRadius, GravityGunReach, HitResult, bDrawDebug);
-	if (!bHit)
-	{
-		//UE_LOG(LogTemp, Log, TEXT("Didn't hit anything"));
-		return;
-	}
+	if (!bHit) return;
 	
 	//UE_LOG(LogTemp, Log, TEXT("We hit: %s"), *UKismetSystemLibrary::GetDisplayName(HitResult.GetActor()));
 	
@@ -96,6 +92,25 @@ void UGravityGunComponent::OnDestroyObject()
 	if (bIsPickupValid)
 	{
 		CurrentPickupComponent->DestroyPickup();
+	}
+	else
+	{
+		// Try destroying pickup in front
+		
+		// Prepare Raycast
+		FHitResult HitResult;
+		
+		const bool bHit = ShootPickupSphereTrace(SphereTraceRadius, GravityGunReach, HitResult, bDrawDebug);
+		if (!bHit) return;
+	
+		AActor* HitActor = HitResult.GetActor();
+		if (!HitActor) return;
+		
+		// Get and check Pickup comp
+		UPickupComponent* PickupComponent = HitActor->FindComponentByClass<UPickupComponent>();
+		if (!PickupComponent) return;
+		
+		PickupComponent->DestroyPickup();
 	}
 }
 
@@ -250,8 +265,9 @@ void UGravityGunComponent::ReleasePickup(const bool bThrow)
 bool UGravityGunComponent::ShootPickupSphereTrace(const float Radius, const float Length, FHitResult& Hit, const bool bDrawDebugTrace)
 {
 	// Prepare Raycast
-	const FVector RaycastStart = PlayerCameraManager->GetCameraLocation();
-	const FVector RaycastEnd = RaycastStart + PlayerCameraManager->GetActorForwardVector() * Length;
+	const FVector ForwardVector = PlayerCameraManager->GetActorForwardVector();
+			const FVector RaycastStart = PlayerCameraManager->GetCameraLocation() + (ForwardVector * Radius);					// Add radius to get an accurate start
+	const FVector RaycastEnd = PlayerCameraManager->GetCameraLocation() + (ForwardVector * Length) - (ForwardVector * Radius); // Remove radius to get an accurate length
 
 	const TArray<AActor*> ActorsToIgnore;
 	
