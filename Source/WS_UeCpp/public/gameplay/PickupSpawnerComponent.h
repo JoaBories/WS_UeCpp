@@ -32,7 +32,7 @@ public:
 	void SpawnNormalPickup();
 	void SpawnThrowPickup();
 	void SpawnTakePickup();
-	void DebugSpawnerCount();
+	void DisplayPickupCounters();
 	
 protected:
 	// Helpers

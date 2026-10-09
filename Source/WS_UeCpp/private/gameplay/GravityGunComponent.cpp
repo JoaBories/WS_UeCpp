@@ -43,7 +43,7 @@ void UGravityGunComponent::BeginPlay()
 	PickupHoldDistance = FMath::Clamp(PickupHoldDistance, PickupHoldMinDistance, PickupHoldMaxDistance);
 }
 
-void UGravityGunComponent::OnTakeObjectInputPressed()
+void UGravityGunComponent::OnTakeObject()
 {
 	const bool bAllPointersChecked = PlayerCameraManager.IsValid() && Character.IsValid();
 	if (!bAllPointersChecked) return;
@@ -55,28 +55,12 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 	}
 	
 	// Prepare Raycast
-	const FVector RaycastStart = PlayerCameraManager->GetCameraLocation();
-	const FVector RaycastEnd = RaycastStart + PlayerCameraManager->GetActorForwardVector() * GravityGunReach;
 	FHitResult HitResult;
 	
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(Character.Get());
-	
-	// Launch Raycast
-#if !UE_BUILD_SHIPPING
-	if (bDrawDebugLine)
-	{
-		DrawDebugLine(GetWorld(), RaycastStart, RaycastEnd, 
-			FColor::Red, false, DrawDebugTime, 0, 1.0f);
-	}
-#endif
-	
-	const bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, 
-		RaycastStart, RaycastEnd, GravityGunCollisionChannel, Params);
-	
+	const bool bHit = ShootPickupSphereTrace(SphereTraceRadius, GravityGunReach, HitResult, bDrawDebug);
 	if (!bHit)
 	{
-		//UE_LOG(LogTemp, Log, TEXT("Didn't hit nothing"));
+		//UE_LOG(LogTemp, Log, TEXT("Didn't hit anything"));
 		return;
 	}
 	
@@ -86,7 +70,7 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 	TryGrabPickup(HitResult.GetActor());
 }
 
-void UGravityGunComponent::OnThrowObjectInputPressed()
+void UGravityGunComponent::OnThrowObjectPressed()
 {
 	if (CurrentPickup.IsValid())
 	{
@@ -95,7 +79,7 @@ void UGravityGunComponent::OnThrowObjectInputPressed()
 	}
 }
 
-void UGravityGunComponent::OnThrowObjectInputReleased()
+void UGravityGunComponent::OnThrowObjectReleased()
 {
 	if (CurrentPickup.IsValid())
 	{
@@ -106,7 +90,16 @@ void UGravityGunComponent::OnThrowObjectInputReleased()
 	bThrowPressed = false;
 }
 
-void UGravityGunComponent::OnAdditionalMultInput(bool State)
+void UGravityGunComponent::OnDestroyObject()
+{
+	const bool bIsPickupValid = CurrentPickup.IsValid() && CurrentPickupComponent.IsValid();
+	if (bIsPickupValid)
+	{
+		CurrentPickupComponent->DestroyPickup();
+	}
+}
+
+void UGravityGunComponent::OnAdditionalMult(bool State)
 {
 	bAdditionalMult = State;
 }
@@ -252,6 +245,24 @@ void UGravityGunComponent::ReleasePickup(const bool bThrow)
 	CurrentPickupStaticMesh = nullptr;
 	CurrentPickupComponent = nullptr;
 	CurrentPickup = nullptr;
+}
+
+bool UGravityGunComponent::ShootPickupSphereTrace(const float Radius, const float Length, FHitResult& Hit, const bool bDrawDebugTrace)
+{
+	// Prepare Raycast
+	const FVector RaycastStart = PlayerCameraManager->GetCameraLocation();
+	const FVector RaycastEnd = RaycastStart + PlayerCameraManager->GetActorForwardVector() * Length;
+
+	const TArray<AActor*> ActorsToIgnore;
+	
+	// Launch Sphere trace
+	const bool bHit = UKismetSystemLibrary::SphereTraceSingle(this, 
+		RaycastStart, RaycastEnd, Radius, 
+		GravityGunTraceChannel, false, ActorsToIgnore, 
+		bDrawDebugTrace ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None, Hit, true, 
+		FLinearColor::Red, FLinearColor::Green, DrawDebugTime);
+	
+	return bHit;
 }
 
 void UGravityGunComponent::OnPickupDestroyed(UPickupComponent* PickupComponent)

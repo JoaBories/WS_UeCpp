@@ -27,13 +27,12 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
 	TObjectPtr<UInputAction> InputActionTake = nullptr;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
 	TObjectPtr<UInputAction> InputActionThrow = nullptr;
-	
+	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
+	TObjectPtr<UInputAction> InputActionDestroy = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
 	TObjectPtr<UInputAction> InputActionAdditionalMult = nullptr;
-	
 	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
 	TObjectPtr<UInputAction> InputActionUpdateReach = nullptr;
 	
@@ -45,6 +44,8 @@ protected:
 	
 	void OnThrowObjectPressed();
 	void OnThrowObjectReleased();
+	
+	void OnDestroyObject();
 	
 	void OnAdditionalMultPressed();
 	void OnAdditionalMultReleased();

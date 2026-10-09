@@ -45,8 +45,7 @@ protected:
 public:
 	void StartPickupDestructionTimer();
 	void ClearDestructionTimer();
-
-protected:
+	
 	void DestroyPickup();
 #pragma endregion
 };

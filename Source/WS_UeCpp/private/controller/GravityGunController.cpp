@@ -34,6 +34,8 @@ void UGravityGunController::SetupInputComponentGravityGun(TObjectPtr<UInputCompo
 	EnhancedInputComponent->BindAction(InputActionThrow, ETriggerEvent::Started, this, &UGravityGunController::OnThrowObjectPressed);
 	EnhancedInputComponent->BindAction(InputActionThrow, ETriggerEvent::Completed, this, &UGravityGunController::OnThrowObjectReleased);
 	
+	EnhancedInputComponent->BindAction(InputActionDestroy, ETriggerEvent::Triggered, this, &UGravityGunController::OnDestroyObject);
+	
 	EnhancedInputComponent->BindAction(InputActionAdditionalMult, ETriggerEvent::Started, this, &UGravityGunController::OnAdditionalMultPressed);
 	EnhancedInputComponent->BindAction(InputActionAdditionalMult, ETriggerEvent::Completed, this, &UGravityGunController::OnAdditionalMultReleased);
 	
@@ -42,27 +44,32 @@ void UGravityGunController::SetupInputComponentGravityGun(TObjectPtr<UInputCompo
 
 void UGravityGunController::OnTakeObject()
 {
-	if (GravityGunComponent.IsValid()) GravityGunComponent->OnTakeObjectInputPressed();
+	if (GravityGunComponent.IsValid()) GravityGunComponent->OnTakeObject();
 }
 
 void UGravityGunController::OnThrowObjectPressed()
 {
-	if (GravityGunComponent.IsValid()) GravityGunComponent->OnThrowObjectInputPressed();
+	if (GravityGunComponent.IsValid()) GravityGunComponent->OnThrowObjectPressed();
 }
 
 void UGravityGunController::OnThrowObjectReleased()
 {
-	if (GravityGunComponent.IsValid()) GravityGunComponent->OnThrowObjectInputReleased();
+	if (GravityGunComponent.IsValid()) GravityGunComponent->OnThrowObjectReleased();
+}
+
+void UGravityGunController::OnDestroyObject()
+{
+	if (GravityGunComponent.IsValid()) GravityGunComponent->OnDestroyObject();
 }
 
 void UGravityGunController::OnAdditionalMultPressed()
 {
-	if (GravityGunComponent.IsValid()) GravityGunComponent->OnAdditionalMultInput(true);
+	if (GravityGunComponent.IsValid()) GravityGunComponent->OnAdditionalMult(true);
 }
 
 void UGravityGunController::OnAdditionalMultReleased()
 {
-	if (GravityGunComponent.IsValid()) GravityGunComponent->OnAdditionalMultInput(false);
+	if (GravityGunComponent.IsValid()) GravityGunComponent->OnAdditionalMult(false);
 }
 
 void UGravityGunController::OnUpdateReach(const FInputActionValue& Value)

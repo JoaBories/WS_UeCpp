@@ -25,12 +25,14 @@ public:
 	virtual void BeginPlay() override;
 
 public:	
-	void OnTakeObjectInputPressed();
+	void OnTakeObject();
 	
-	void OnThrowObjectInputPressed();
-	void OnThrowObjectInputReleased();
+	void OnThrowObjectPressed();
+	void OnThrowObjectReleased();
 	
-	void OnAdditionalMultInput(bool State);
+	void OnDestroyObject();
+	
+	void OnAdditionalMult(bool State);
 	
 	void OnUpdateReach(float Value);
 
@@ -49,6 +51,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Gravity Gun")
 	TEnumAsByte<ETraceTypeQuery> GravityGunTraceChannel;
 	ECollisionChannel GravityGunCollisionChannel;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Gravity Gun")
+	float SphereTraceRadius = 10.0f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Reach", meta = (ClampMin = "0.0", ClampMax = "1000.0", Units = "Centimeters"))
 	float GravityGunMinReach = 100.0f;
@@ -107,6 +112,8 @@ protected:
 	void UpdatePickupLocation();
 	void ReleasePickup(bool bThrow = false);
 	
+	bool ShootPickupSphereTrace(float Radius, float Length, FHitResult& Hit, bool bDrawDebugTrace = false);
+	
 	UFUNCTION()
 	void OnPickupDestroyed(UPickupComponent* PickupComponent);
 #pragma endregion
@@ -114,8 +121,8 @@ protected:
 #pragma region Debug
 protected :
 	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Debug")
-	bool bDrawDebugLine = false;
-	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Debug", meta = (ClampMin = "0.0", ClampMax = "10.0", Units = "Seconds", EditCondition = "bDrawDebugLine", EditConditionHides = "bDrawDebugLine"))
+	bool bDrawDebug = false;
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Debug", meta = (ClampMin = "0.0", ClampMax = "10.0", Units = "Seconds", EditCondition = "bDrawDebug", EditConditionHides = "bDrawDebugLine"))
 	float DrawDebugTime = 1.0f;
 #pragma endregion
 };

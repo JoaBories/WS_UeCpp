@@ -131,7 +131,7 @@ void UPickupSpawnerComponent::SpawnTakePickup()
 	TotalPickupCount++;
 }
 
-void UPickupSpawnerComponent::DebugSpawnerCount()
+void UPickupSpawnerComponent::DisplayPickupCounters()
 {
 	UE_LOG(LogTemp, Log, TEXT("--- Debug Counters -----------------"))
 	UE_LOG(LogTemp, Log, TEXT("Total Pickups: %d / %d"), TotalPickupCount, TotalPickupCap);
