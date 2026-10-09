@@ -9,6 +9,7 @@
 
 #include "gameplay/PickupComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "gameplay/GravityGunDataAsset.h"
 
 UGravityGunComponent::UGravityGunComponent()
 {
@@ -233,6 +234,20 @@ void UGravityGunComponent::ReleasePickup(const bool bThrow)
 		
 		const float AdditionalMult = bAdditionalMult ? ThrowAdditionalMult : 1.0f;
 		const float ThrowMult = ThrowMaxHoldMult * CurveValue * AdditionalMult;
+		
+		float PickupThrowForce;
+		FVector PickupAngularForce;
+		
+		if (GravityGunDataAsset)
+		{
+			PickupThrowForce = GravityGunDataAsset->PickupThrowForce;
+			PickupAngularForce = GravityGunDataAsset->PickupAngularForce;
+		}
+		else
+		{
+			PickupThrowForce = 1000.0f;
+			PickupAngularForce = FVector(1000.0f, 1000.0f, 1000.0f);
+		}
 		
 		const FVector Impulse = PlayerCameraManager->GetActorForwardVector() * PickupThrowForce * ThrowMult;
 		CurrentPickupStaticMesh->AddImpulse(Impulse);

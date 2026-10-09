@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "GravityGunComponent.generated.h"
 
+class UGravityGunDataAsset;
 class UPickupComponent;
 class UStaticMeshComponent;
 class AMainCharacter;
@@ -85,14 +86,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Hold", meta = (ClampMin = "0.0", ClampMax = "100.0", Units = "CentimetersPerSecond"))
 	float PickupHoldChangerate = 10.0f;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw", meta = (ClampMin = "0.0", ClampMax = "10000.0", Units = "CentimetersPerSecond"))
-	float PickupThrowForce = 3000.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw", meta = (ClampMin = "0.0", ClampMax = "20.0"))
 	float ThrowMaxHoldMult = 5.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw", meta = (ClampMin = "0.0", ClampMax = "30.0", Units = "Seconds"))
 	float ThrowMaxHoldTime = 2.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw")
 	TObjectPtr<UCurveFloat> ThrowHoldCurve = nullptr;
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw")
+	TObjectPtr<UGravityGunDataAsset> GravityGunDataAsset = nullptr;
 	
 	float TimeThrowPressed = 0.0f;
 	bool bThrowPressed = false;
@@ -101,9 +102,6 @@ protected:
 	float ThrowAdditionalMult = 5.0f;
 	
 	bool bAdditionalMult = false;
-	
-	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw")
-	FVector PickupAngularForce = FVector(2000.0f, 2000.0f, 2000.0f);
 
 public:
 	UFUNCTION(BlueprintPure, Category= "Gravity Gun")
