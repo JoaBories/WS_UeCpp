@@ -26,6 +26,51 @@ void UGravityGunComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	if (bThrowPressed) TimeThrowPressed += DeltaTime;
 }
 
+#if WITH_EDITOR
+
+void UGravityGunComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+	
+	// Get what changed
+	const FName PropertyChanged = (PropertyChangedEvent.Property != NULL) ? 
+		PropertyChangedEvent.Property->GetFName() : NAME_None;
+	
+	// Make sure we're load
+	if (!HasAnyFlags(RF_NeedLoad | RF_Transient))
+	{
+		// Check what changed
+		if (PropertyChanged == GET_MEMBER_NAME_CHECKED(UGravityGunComponent, GravityGunMinReach))
+		{
+			OnUpdateMinReach();
+		}
+		else if (PropertyChanged == GET_MEMBER_NAME_CHECKED(UGravityGunComponent, GravityGunMaxReach))
+		{
+			OnUpdateMaxReach();
+		}
+	}
+}
+
+void UGravityGunComponent::OnUpdateMinReach()
+{
+	if (GravityGunMinReach > GravityGunMaxReach)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Minimum reach can't be higher than Maximum reach"))
+		GravityGunMinReach = GravityGunMaxReach;
+	}
+}
+
+void UGravityGunComponent::OnUpdateMaxReach()
+{
+	if (GravityGunMinReach > GravityGunMaxReach)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Maximum reach can't be lower than Minimum reach"))
+		GravityGunMaxReach = GravityGunMinReach;
+	}
+}
+
+#endif
+
 void UGravityGunComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -37,10 +82,9 @@ void UGravityGunComponent::BeginPlay()
 	// Convert trace query to collision channel
 	GravityGunCollisionChannel = UEngineTypes::ConvertToCollisionChannel(GravityGunTraceChannel);
 	
-	if (GravityGunMinReach > GravityGunMaxReach) UE_LOG(LogTemp, Error, TEXT("Minimum reach is higher than Maximum reach"))
 	GravityGunReach = FMath::Clamp(GravityGunReach, GravityGunMinReach, GravityGunMaxReach);
 	
-	if (PickupHoldMinDistance > PickupHoldMaxDistance) UE_LOG(LogTemp, Error, TEXT("Minimum hold distance is higher than Maximum hold distance"))
+	if (PickupHoldMinDistance > PickupHoldMaxDistance) UE_LOG(LogTemp, Warning, TEXT("Minimum hold distance is higher than Maximum hold distance"))
 	PickupHoldDistance = FMath::Clamp(PickupHoldDistance, PickupHoldMinDistance, PickupHoldMaxDistance);
 }
 

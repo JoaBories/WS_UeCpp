@@ -7,6 +7,7 @@
 #include "gameplay/PickupComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "UObject/ObjectSaveContext.h"
+#include "Components/PointLightComponent.h"
 
 AGoal::AGoal(const FObjectInitializer& ObjectInitializer) : 
 	Super(ObjectInitializer)
@@ -16,6 +17,22 @@ AGoal::AGoal(const FObjectInitializer& ObjectInitializer) :
 	// Create Box Component
 	BoxComponent = ObjectInitializer.CreateOptionalDefaultSubobject<UBoxComponent>(this, TEXT("BoxComponent"));
 	if (BoxComponent) SetRootComponent(BoxComponent);
+	
+	// Create Light Component
+	PointLightComponent = ObjectInitializer.CreateOptionalDefaultSubobject<UPointLightComponent>(this, TEXT("PointLightComponent"));
+	if (PointLightComponent) PointLightComponent->SetupAttachment(RootComponent);
+}
+
+void AGoal::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+	
+#if WITH_EDITOR
+	if (IsTemplate() || !HasAnyFlags(RF_NeedLoad | RF_Transient))
+	{
+		UpdatePointLight();
+	}
+#endif
 }
 
 #if !UE_BUILD_SHIPPING
@@ -40,6 +57,30 @@ ETeam AGoal::GetTeam() const
 {
 	return Team;
 }
+
+#if WITH_EDITOR
+void AGoal::UpdatePointLight()
+{
+	if (!PointLightComponent) return;
+	
+	FLinearColor NewLightColor;
+	switch (Team)
+	{
+		case ETeam::Red:
+			NewLightColor = FLinearColor::Red;
+			break;
+		
+		case ETeam::Blue:
+			NewLightColor = FLinearColor::Blue;
+			break;
+		
+		default:
+			NewLightColor = FLinearColor::White;
+			break;
+	}
+	PointLightComponent->SetLightColor(NewLightColor);
+}
+#endif
 
 void AGoal::BeginPlay()
 {

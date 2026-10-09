@@ -24,6 +24,13 @@ public:
 	UGravityGunComponent();
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	void OnUpdateMinReach();
+	void OnUpdateMaxReach();
+#endif
+	
 	virtual void BeginPlay() override;
 
 public:	

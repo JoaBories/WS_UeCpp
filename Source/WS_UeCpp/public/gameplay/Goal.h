@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "Goal.generated.h"
 
+class UPointLightComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnGoalScored, AGoal*, Goal, unsigned int, NewScore);
 
 class UBoxComponent;
@@ -18,20 +19,29 @@ class WS_UECPP_API AGoal : public AActor
 	
 public:	
 	AGoal(const FObjectInitializer& ObjectInitializer);
+	virtual void OnConstruction(const FTransform& Transform) override;
 	
 #if !UE_BUILD_SHIPPING
 	virtual void PreSave(FObjectPreSaveContext SaveContext) override;
 #endif
-	
-	ETeam GetTeam() const;
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
+public:
+	ETeam GetTeam() const;
+	
+protected:
+#if WITH_EDITOR
+	void UpdatePointLight();
+#endif
 	
 public:
 	FOnGoalScored GoalScored;
+	
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UPointLightComponent> PointLightComponent = nullptr;
 	
 protected:
 	UPROPERTY(EditAnywhere, Category="Goal")
