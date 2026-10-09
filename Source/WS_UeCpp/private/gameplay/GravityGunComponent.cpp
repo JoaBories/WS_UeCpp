@@ -228,7 +228,12 @@ void UGravityGunComponent::ReleasePickup(const bool bThrow)
 	const bool bCanThrowPickup = bThrow && PlayerCameraManager.IsValid();
 	if (bCanThrowPickup)
 	{
-		const float ThrowMult = ThrowMaxHoldMult * FMath::Clamp(TimeThrowPressed / ThrowMaxHoldTime, 0.0f, 1.0f) * (bAdditionalMult ? ThrowAdditionalMult : 1.0f);
+		const float HoldRatio = FMath::Clamp(TimeThrowPressed / ThrowMaxHoldTime, 0.0f, 1.0f);
+		const float CurveValue = ThrowHoldCurve ?  ThrowHoldCurve->GetFloatValue(HoldRatio): HoldRatio;
+		
+		const float AdditionalMult = bAdditionalMult ? ThrowAdditionalMult : 1.0f;
+		const float ThrowMult = ThrowMaxHoldMult * CurveValue * AdditionalMult;
+		
 		const FVector Impulse = PlayerCameraManager->GetActorForwardVector() * PickupThrowForce * ThrowMult;
 		CurrentPickupStaticMesh->AddImpulse(Impulse);
 		

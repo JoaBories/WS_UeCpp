@@ -9,6 +9,7 @@
 class UPickupComponent;
 class UStaticMeshComponent;
 class AMainCharacter;
+class UCurveFloat;
 class APlayerCameraManager;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickupTakenDelegate, AActor*, PickupActor);
@@ -90,6 +91,8 @@ protected:
 	float ThrowMaxHoldMult = 5.0f;
 	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw", meta = (ClampMin = "0.0", ClampMax = "30.0", Units = "Seconds"))
 	float ThrowMaxHoldTime = 2.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Gravity Gun|Throw")
+	TObjectPtr<UCurveFloat> ThrowHoldCurve = nullptr;
 	
 	float TimeThrowPressed = 0.0f;
 	bool bThrowPressed = false;

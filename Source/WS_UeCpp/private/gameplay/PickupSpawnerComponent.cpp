@@ -227,6 +227,10 @@ void UPickupSpawnerComponent::EndCooldown()
 
 void UPickupSpawnerComponent::OnPickupDestroyed(UPickupComponent* PickupComponent)
 {
+	if (!PickupComponent) return;
+	
+	PickupComponent->PickupDestroy.RemoveDynamic(this, &UPickupSpawnerComponent::OnPickupDestroyed);
+	
 	const EPickupType PickupType = PickupComponent->GetPickupType();
 	
 	if (PickupType == EPickupType::Normal) NormalPickupCount--;
