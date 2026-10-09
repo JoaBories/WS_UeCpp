@@ -106,7 +106,7 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 	const EPickupType PickupType = CurrentPickupComponent.IsValid() ? CurrentPickupComponent->GetPickupType() : EPickupType::None;
 	switch (PickupType)
 	{
-		case EPickupType::DestroyAfterPickup:
+		case EPickupType::DestroyAfterTake:
 			// Launch Timer
 			CurrentPickupComponent->StartPickupDestructionTimer();
 			
@@ -141,6 +141,9 @@ void UGravityGunComponent::OnThrowObjectInputReleased()
 	{
 		ReleasePickup(true);
 	}
+
+	TimeThrowPressed = 0.0f;
+	bThrowPressed = false;
 }
 
 void UGravityGunComponent::OnAdditionalMultInput(bool State)
@@ -220,7 +223,7 @@ void UGravityGunComponent::ReleasePickup(bool bThrow)
 	
 	// Unbind on destroy event
 	const bool bCanUnbindFromDestructionEvent = 
-		CurrentPickupComponent.IsValid() && CurrentPickupComponent->GetPickupType() == EPickupType::DestroyAfterPickup;
+		CurrentPickupComponent.IsValid() && CurrentPickupComponent->GetPickupType() == EPickupType::DestroyAfterTake;
 	if (bCanUnbindFromDestructionEvent)
 	{
 		CurrentPickupComponent->PickupDestroy.RemoveDynamic(this, &UGravityGunComponent::OnPickupDestroyed);

@@ -9,7 +9,7 @@ enum class EPickupType : uint8
 {
 	None UMETA(Hidden),
 	Normal,
-	DestroyAfterPickup,
+	DestroyAfterTake,
 	DestroyAfterThrow,
 	MAX UMETA(Hidden)
 };

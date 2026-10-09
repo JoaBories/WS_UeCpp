@@ -29,9 +29,13 @@ public:
 	void SpawnNormalPickup();
 	void SpawnThrowPickup();
 	void SpawnTakePickup();
+	void DebugSpawnerCount();
 	
 protected:
-	AActor* SpawnPickup(UClass* PickupClass);
+	// Helpers
+	AActor* SpawnAndBindPickup(UClass* PickupClass);
+	void CountAndBindPickups(UClass* PickupClass, unsigned int& PickupCount);
+	void UnbindPickups(UClass* PickupClass);
 	
 protected:
 	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner")
@@ -44,6 +48,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner", meta=(ClampMin = "100.0", ClampMax = "500.0"))
 	float SpawnDistance = 150.0f;
 	
+	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner", meta=(ClampMax = "200.0"))
+	unsigned int NormalPickupCap = 50.0f;
+	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner", meta=(ClampMax = "200.0"))
+	unsigned int ThrowPickupCap = 50.0f;
+	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner", meta=(ClampMax = "200.0"))
+	unsigned int TakePickupCap = 50.0f;
+	UPROPERTY(EditDefaultsOnly, Category="PickupSpawner", meta=(ClampMax = "500.0"))
+	unsigned int TotalPickupCap = 200.0f;
+	
+	unsigned int NormalPickupCount = 0;
+	unsigned int ThrowPickupCount = 0;
+	unsigned int TakePickupCount = 0;
+	unsigned int TotalPickupCount = 0;
 # pragma endregion
 	
 protected:

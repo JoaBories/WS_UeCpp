@@ -46,9 +46,13 @@ void UPickupSpawnerController::OnSpawnPickup(const FInputActionValue& InputActio
 		{
 			PickupSpawnerComponent->SpawnThrowPickup();
 		}
-		else if (Value.Y)
+		else if (Value.Y > 0)
 		{
 			PickupSpawnerComponent->SpawnTakePickup();
+		}
+		else if (Value.Y < 0)
+		{
+			PickupSpawnerComponent->DebugSpawnerCount();
 		}
 	}
 }
