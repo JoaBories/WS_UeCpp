@@ -80,50 +80,10 @@ void UGravityGunComponent::OnTakeObjectInputPressed()
 		return;
 	}
 	
-	//UE_LOG(LogTemp, Log, TEXT("We hit: %s"), 
-	//	*UKismetSystemLibrary::GetDisplayName(HitResult.GetActor()));
+	//UE_LOG(LogTemp, Log, TEXT("We hit: %s"), *UKismetSystemLibrary::GetDisplayName(HitResult.GetActor()));
 	
-	// Get pickup reference
-	CurrentPickup = HitResult.GetActor();
-	if (CurrentPickup.IsValid())
-	{
-		CurrentPickupComponent = CurrentPickup->FindComponentByClass<UPickupComponent>();
-		CurrentPickupStaticMesh = CurrentPickup->FindComponentByClass<UStaticMeshComponent>();
-		if (!CurrentPickupComponent.IsValid())
-		{
-			UE_LOG(LogTemp, Log, TEXT("Pick UP is missing Pick Up Component"));
-		}
-	}
-	
-	PickupHoldDistance = FMath::Clamp(HitResult.Distance, PickupHoldMinDistance, PickupHoldMaxDistance);
-	
-	// Disable pickup physics
-	CurrentPickupStaticMesh->SetSimulatePhysics(false);
-	PreviousCollisionProfile = CurrentPickupStaticMesh->GetCollisionProfileName();
-	CurrentPickupStaticMesh->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
-	
-	// Check pickup type
-	const EPickupType PickupType = CurrentPickupComponent.IsValid() ? CurrentPickupComponent->GetPickupType() : EPickupType::None;
-	switch (PickupType)
-	{
-		case EPickupType::DestroyAfterTake:
-			// Launch Timer
-			CurrentPickupComponent->StartPickupDestructionTimer();
-			
-			// Bind on event
-			CurrentPickupComponent->PickupDestroy.AddUniqueDynamic(this, &UGravityGunComponent::OnPickupDestroyed);
-			break;
-		
-		case EPickupType::DestroyAfterThrow:
-			CurrentPickupComponent->ClearDestructionTimer();
-			break;
-		
-		default:
-			break;
-	}
-	
-	// Broadcast pickup event
-	PickupTaken.Broadcast(CurrentPickup.Get());
+	// Try grab pickup
+	TryGrabPickup(HitResult.GetActor());
 }
 
 void UGravityGunComponent::OnThrowObjectInputPressed()
@@ -167,6 +127,65 @@ void UGravityGunComponent::OnUpdateReach(const float Value)
 	}
 }
 
+bool UGravityGunComponent::TryGrabPickup(AActor* Actor)
+{
+	// Don't grab if there is already a pickup
+	if (CurrentPickup.IsValid()) return false;
+	
+	// Check pointer
+	if (!Actor) return false;
+	CurrentPickup = Actor;
+	
+	// Check actor
+	if (!CurrentPickup.IsValid()) return false;
+		
+	// Get and check Pickup comp
+	CurrentPickupComponent = CurrentPickup->FindComponentByClass<UPickupComponent>();
+	if (!CurrentPickupComponent.IsValid())
+	{
+		UE_LOG(LogTemp, Log, TEXT("Pick UP is missing Pick Up Component"));
+		return false;
+	}
+	
+	// Get Static mesh
+	CurrentPickupStaticMesh = CurrentPickup->FindComponentByClass<UStaticMeshComponent>();
+
+	// Set hold distance depending on pickup distance
+	const FVector CameraPosition = PlayerCameraManager->GetCameraLocation();
+	const float Distance = (CurrentPickup->GetActorLocation() - CameraPosition).Length();
+	PickupHoldDistance = FMath::Clamp(Distance, PickupHoldMinDistance, PickupHoldMaxDistance);
+	
+	// Disable pickup physics
+	CurrentPickupStaticMesh->SetSimulatePhysics(false);
+	PreviousCollisionProfile = CurrentPickupStaticMesh->GetCollisionProfileName();
+	CurrentPickupStaticMesh->SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
+	
+	// Check pickup type
+	const EPickupType PickupType = CurrentPickupComponent.IsValid() ? CurrentPickupComponent->GetPickupType() : EPickupType::None;
+	switch (PickupType)
+	{
+		case EPickupType::DestroyAfterTake:
+			// Launch Timer
+			CurrentPickupComponent->StartPickupDestructionTimer();
+				
+			// Bind on event
+			CurrentPickupComponent->PickupDestroy.AddUniqueDynamic(this, &UGravityGunComponent::OnPickupDestroyed);
+			break;
+			
+		case EPickupType::DestroyAfterThrow:
+			CurrentPickupComponent->ClearDestructionTimer();
+			break;
+			
+		default:
+			break;
+	}
+	
+	// Broadcast pickup event
+	PickupTaken.Broadcast(CurrentPickup.Get());
+	
+	return true;
+}
+
 float UGravityGunComponent::GetThrowMaxHoldTime() const
 {
 	return ThrowMaxHoldTime;
@@ -191,7 +210,7 @@ void UGravityGunComponent::UpdatePickupLocation()
 	CurrentPickup->SetActorLocationAndRotation(NewLocation, CameraRotation);
 }
 
-void UGravityGunComponent::ReleasePickup(bool bThrow)
+void UGravityGunComponent::ReleasePickup(const bool bThrow)
 {
 	// Enable pickup physics
 	CurrentPickupStaticMesh->SetCollisionProfileName(PreviousCollisionProfile);

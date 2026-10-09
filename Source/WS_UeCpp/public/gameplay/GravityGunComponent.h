@@ -20,9 +20,8 @@ class WS_UECPP_API UGravityGunComponent : public UActorComponent
 
 public:	
 	UGravityGunComponent();
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-protected:
 	virtual void BeginPlay() override;
 
 public:	
@@ -34,6 +33,8 @@ public:
 	void OnAdditionalMultInput(bool State);
 	
 	void OnUpdateReach(float Value);
+
+	bool TryGrabPickup(AActor* Actor);
 	
 public:
 	UPROPERTY(BlueprintAssignable, BlueprintCallable, Category= "Gravity Gun")

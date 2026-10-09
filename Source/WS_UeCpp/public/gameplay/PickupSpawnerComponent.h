@@ -8,6 +8,7 @@
 
 class AMainCharacter;
 class UPickupComponent;
+class UGravityGunComponent;
 class APlayerCameraManager;
 
 UCLASS(Abstract, Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -22,7 +23,9 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 protected:
+	TWeakObjectPtr<AMainCharacter> Character = nullptr;
 	TWeakObjectPtr<APlayerCameraManager> PlayerCameraManager = nullptr;
+	TWeakObjectPtr<UGravityGunComponent> GravityGunComponent = nullptr;
 	
 #pragma region Spawn Pickup
 public:

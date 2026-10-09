@@ -3,8 +3,11 @@
 
 #include "gameplay/PickupSpawnerComponent.h"
 
-#include "gameplay/PickupComponent.h"
 #include "Kismet/GameplayStatics.h"
+
+#include "gameplay/MainCharacter.h"
+#include "gameplay/PickupComponent.h"
+#include "gameplay/GravityGunComponent.h"
 
 UPickupSpawnerComponent::UPickupSpawnerComponent()
 {
@@ -17,6 +20,8 @@ void UPickupSpawnerComponent::BeginPlay()
 	
 	// Get references
 	PlayerCameraManager = UGameplayStatics::GetPlayerCameraManager(this, 0);
+	Character = Cast<AMainCharacter>(GetOwner());
+	GravityGunComponent = Character->FindComponentByClass<UGravityGunComponent>();
 	
 	// Count and bind already spawned pickups
 	CountAndBindPickups(NormalPickup, NormalPickupCount);
@@ -30,6 +35,8 @@ void UPickupSpawnerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	UnbindPickups(NormalPickup);
 	UnbindPickups(ThrowPickup);
 	UnbindPickups(TakePickup);
+	
+	ClearCooldownTimer();
 	
 	Super::EndPlay(EndPlayReason);
 }
@@ -50,6 +57,12 @@ void UPickupSpawnerComponent::SpawnNormalPickup()
 	// Spawn pickup
 	AActor* SpawnedActor = SpawnAndBindPickup(NormalPickup);
 	if (!SpawnedActor) return;
+	
+	// Try grabbing spawned pickup
+	if (GravityGunComponent.IsValid())
+	{
+		GravityGunComponent->TryGrabPickup(SpawnedActor);
+	}
 	
 	LaunchCooldownTimer();
 	
@@ -75,6 +88,12 @@ void UPickupSpawnerComponent::SpawnThrowPickup()
 	AActor* SpawnedActor = SpawnAndBindPickup(ThrowPickup);
 	if (!SpawnedActor) return;
 	
+	// Try grabbing spawned pickup
+	if (GravityGunComponent.IsValid())
+	{
+		GravityGunComponent->TryGrabPickup(SpawnedActor);
+	}
+	
 	LaunchCooldownTimer();
 	
 	// Count pickup
@@ -99,6 +118,12 @@ void UPickupSpawnerComponent::SpawnTakePickup()
 	AActor* SpawnedActor = SpawnAndBindPickup(TakePickup);
 	if (!SpawnedActor) return;
 	
+	// Try grabbing spawned pickup
+	if (GravityGunComponent.IsValid())
+	{
+		GravityGunComponent->TryGrabPickup(SpawnedActor);
+	}
+	
 	LaunchCooldownTimer();
 	
 	// Count pickup
@@ -121,13 +146,14 @@ AActor* UPickupSpawnerComponent::SpawnAndBindPickup(UClass* PickupClass)
 	if (!bCanSpawn) return nullptr;
 	
 	// Prepare spawn
-	// Compute spawn location and rotation
+		// Compute spawn location and rotation
 	const FVector CameraLocation = PlayerCameraManager->GetCameraLocation();
 	const FVector CameraForward = PlayerCameraManager->GetActorForwardVector();
-	FVector PickupLocation = CameraLocation + (CameraForward * SpawnDistance);
-	FRotator PickupRotation = PlayerCameraManager->GetCameraRotation();
+
+	const FVector PickupLocation = CameraLocation + (CameraForward * SpawnDistance);
+	const FRotator PickupRotation = PlayerCameraManager->GetCameraRotation();
 	
-	// Set parameters
+		// Set parameters
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	
@@ -148,7 +174,7 @@ void UPickupSpawnerComponent::CountAndBindPickups(UClass* PickupClass, unsigned 
 	TArray<AActor*> PickupActors;
 	
 	UGameplayStatics::GetAllActorsOfClass(this, PickupClass, PickupActors);
-	for (AActor* Pickup : PickupActors)
+	for (const AActor* Pickup : PickupActors)
 	{
 		// Get and Check Pickup comp
 		UPickupComponent* PickupComp = Pickup->FindComponentByClass<UPickupComponent>();
@@ -166,7 +192,7 @@ void UPickupSpawnerComponent::UnbindPickups(UClass* PickupClass)
 	TArray<AActor*> PickupActors;
 	
 	UGameplayStatics::GetAllActorsOfClass(this, PickupClass, PickupActors);
-	for (AActor* Pickup : PickupActors)
+	for (const AActor* Pickup : PickupActors)
 	{
 		// Get and Check Pickup comp
 		UPickupComponent* PickupComp = Pickup->FindComponentByClass<UPickupComponent>();
@@ -201,7 +227,8 @@ void UPickupSpawnerComponent::EndCooldown()
 
 void UPickupSpawnerComponent::OnPickupDestroyed(UPickupComponent* PickupComponent)
 {
-	EPickupType PickupType = PickupComponent->GetPickupType();
+	const EPickupType PickupType = PickupComponent->GetPickupType();
+	
 	if (PickupType == EPickupType::Normal) NormalPickupCount--;
 	else if (PickupType == EPickupType::DestroyAfterThrow) ThrowPickupCount--;
 	else if (PickupType == EPickupType::DestroyAfterTake) TakePickupCount--;
